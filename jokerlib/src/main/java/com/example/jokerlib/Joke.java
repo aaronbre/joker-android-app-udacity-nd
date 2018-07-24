@@ -30,4 +30,12 @@ public class Joke implements Serializable {
     public String toString() {
         return this.jokeQuestion + " . . . \n" + this.jokeAnswer;
     }
+
+    public static Joke jokeFromFormattedString(String s){
+        Joke joke = new Joke();
+        String lines[] = s.split("\\r?\\n");
+        joke.setJokeQuestion(lines[0]);
+        joke.setJokeAnswer(lines[1]);
+        return joke;
+    }
 }

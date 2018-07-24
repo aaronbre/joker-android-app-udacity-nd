@@ -1,28 +1,24 @@
 package com.udacity.gradle.builditbigger;
 
-import android.content.Context;
-import android.content.Intent;
 import android.os.AsyncTask;
-import android.util.Pair;
 
-import com.example.androidjoker.JokeActivity;
-import com.example.jokerlib.Joke;
 import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.extensions.android.json.AndroidJsonFactory;
 import com.google.api.client.googleapis.services.AbstractGoogleClientRequest;
 import com.google.api.client.googleapis.services.GoogleClientRequestInitializer;
-import com.udacity.gradle.builditbigger.backend.MyBean;
 import com.udacity.gradle.builditbigger.backend.myApi.MyApi;
+
 import java.io.IOException;
 /*
     code is from the linked resource in the project instructions
  */
-public class EndpointAsyncTask extends AsyncTask<Context, Void, String>{
+public class EndpointAsyncTask extends AsyncTask<JokeReturnHandler, Void, String>{
     private static MyApi myApiService = null;
-    private Context context;
+    private static final String TEST_APP_ID = "com.udacity.gradle.builditbigger.paid.test";
+    private JokeReturnHandler mHandler;
 
     @Override
-    protected String doInBackground(Context... params) {
+    protected String doInBackground(JokeReturnHandler... params) {
         if(myApiService == null) {  // Only do this once
             MyApi.Builder builder = new MyApi.Builder(AndroidHttp.newCompatibleTransport(),
                     new AndroidJsonFactory(), null)
@@ -41,7 +37,7 @@ public class EndpointAsyncTask extends AsyncTask<Context, Void, String>{
             myApiService = builder.build();
         }
 
-        context = params[0];
+        mHandler = params[0];
 
         try {
             return myApiService.getJoke().execute().getJoke();
@@ -54,13 +50,7 @@ public class EndpointAsyncTask extends AsyncTask<Context, Void, String>{
     @Override
     protected void onPostExecute(String response) {
         if(response != null && !response.isEmpty()){
-            Joke joke = new Joke();
-            String lines[] = response.split("\\r?\\n");
-            joke.setJokeQuestion(lines[0]);
-            joke.setJokeAnswer(lines[1]);
-            Intent intent = new Intent(context, JokeActivity.class);
-            intent.putExtra(JokeActivity.JOKE_EXTRA, joke);
-            context.startActivity(intent);
+            mHandler.handleJokeData(response);
         }
     }
 }
