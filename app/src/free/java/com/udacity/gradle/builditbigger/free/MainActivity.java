@@ -6,26 +6,32 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 
 import com.example.androidjoker.JokeActivity;
 import com.example.jokerlib.Joke;
-import com.example.jokerlib.Joker;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.InterstitialAd;
 import com.udacity.gradle.builditbigger.EndpointAsyncTask;
+import com.udacity.gradle.builditbigger.JokeReturnHandler;
 import com.udacity.gradle.builditbigger.R;
 
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements JokeReturnHandler {
     private InterstitialAd mInterstitialAd;
-    private ImageView loadingImage;
+    private ImageView mLoadingImage;
+    private ViewGroup mFragContainer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        mLoadingImage = findViewById(R.id.loading_image);
+        mFragContainer = findViewById(R.id.fragment_container);
         mInterstitialAd = new InterstitialAd(this);
         mInterstitialAd.setAdUnitId("ca-app-pub-3940256099942544/1033173712");
         mInterstitialAd.loadAd(new AdRequest.Builder().build());
@@ -71,6 +77,30 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void loadJokeActivity() {
+        showLoadingImage();
         new EndpointAsyncTask().execute(this);
+    }
+
+    private void showLoadingImage() {
+        mFragContainer.setVisibility(View.GONE);
+        mLoadingImage.setVisibility(View.VISIBLE);
+        Animation rotate = AnimationUtils.loadAnimation(this, R.anim.rotate);
+        mLoadingImage.startAnimation(rotate);
+    }
+
+    public void hideLoadingImage(){
+        mFragContainer.setVisibility(View.VISIBLE);
+        mLoadingImage.clearAnimation();
+        mLoadingImage.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void handleJokeData(String response) {
+        Joke joke = Joke.jokeFromFormattedString(response);
+        Intent intent = new Intent(this, JokeActivity.class);
+        intent.setAction("showJoke");
+        intent.putExtra(JokeActivity.JOKE_EXTRA, joke);
+        hideLoadingImage();
+        startActivity(intent);
     }
 }
