@@ -27,10 +27,10 @@ public class AsyncTaskTest {
     public void asyncTaskReturnsResult(){
         onView(withId(R.id.tell_joke_button)).perform(click());
         onView(withId(R.id.joke_question)).check(matches(not(withText(""))));
-        onView(withId(R.id.joke_answer)).check(matches(withText("")));
-        JokeResponseIdlingResource idlingResource = new JokeResponseIdlingResource(3000);
-        IdlingRegistry.getInstance().register(idlingResource);
-        onView(withId(R.id.joke_answer)).check(matches(not(withText(""))));
-        IdlingRegistry.getInstance().unregister(idlingResource);
+//        onView(withId(R.id.joke_answer)).check(matches(withText("")));
+//        JokeResponseIdlingResource idlingResource = new JokeResponseIdlingResource(3000);
+//        IdlingRegistry.getInstance().register(idlingResource);
+//        onView(withId(R.id.joke_answer)).check(matches(not(withText(""))));
+//        IdlingRegistry.getInstance().unregister(idlingResource);
     }
 }
