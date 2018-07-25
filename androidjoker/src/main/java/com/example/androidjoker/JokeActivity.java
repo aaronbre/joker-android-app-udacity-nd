@@ -44,9 +44,9 @@ public class JokeActivity extends AppCompatActivity {
             @Override
             public void run() {
                 mJokeAnswer.setVisibility(View.VISIBLE);
-                mJokeAnswer.setText(answer);
                 mDelaySpinner.clearAnimation();
                 mDelaySpinner.setVisibility(View.GONE);
+                mJokeAnswer.setText(answer);
             }
         }, 3000);
     }
